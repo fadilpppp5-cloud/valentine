@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Valentine</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      background-color: #0f172a;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 40px 10px;
+      overflow: hidden;
+    }
+
+    button, input {
+      padding: 12px 22px;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      margin: 10px;
+    }
+
+    button { cursor: pointer; }
+
+    .mainBtn {
+      background-color: #38bdf8;
+      color: black;
+    }
+
+    .hidden { display: none; }
+
+    img {
+      width: 90%;
+      max-width: 260px;
+      border-radius: 15px;
+      margin-top: 20px;
+    }
+
+    #noBtn { position: absolute; }
+
+    /* FLOATING HEARTS */
+    .heart {
+      position: fixed;
+      bottom: -20px;
+      color: pink;
+      font-size: 20px;
+      animation: floatUp 6s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-100vh); opacity: 0; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- AUDIO -->
+  <audio id="yesMusic"><source src="anime-wow-sound.mp3"></audio>
+  <audio id="noMusic"><source src="sad-meow-song.mp3"></audio>
+
+  <!-- PASSWORD -->
+  <div id="lock">
+    <h2>🔒 Enter Password</h2>
+    <input type="password" id="pass" placeholder="Password">
+    <br>
+    <button onclick="checkPass()">Enter</button>
+    <p id="error" style="color:red;"></p>
+  </div>
+
+  <!-- START -->
+  <div id="start" class="hidden">
+    <h1>Hyy babieeeeeeeeeeeeeeeee😘👋</h1>
+    <button class="mainBtn" onclick="showLove()">Click Me</button>
+  </div>
+
+  <!-- LOVE -->
+  <div id="love" class="hidden">
+    <h1>I love you naaanuo 🤍</h1>
+    <img src="download.png">
+    <p>Will you be my Valentine? 💖</p>
+
+    <button onclick="yesClick()">Yes</button>
+    <button id="noBtn" onmouseover="runAway()" ontouchstart="runAway()">No</button>
+  </div>
+
+  <!-- YES -->
+  <div id="yes" class="hidden">
+    <h1>Yayyyy   mmwwwwwwwwwwwwwaaaaaaaaaaaaaaaaaaaaaahhhhhhhh😘😘😘🥰</h1>
+    <img src="download.jpeg"><br><br>
+    <button onclick="goBack()">Back</button>
+  </div>
+
+  <!-- NO -->
+  <div id="no" class="hidden">
+    <h1>Oh okay 🥺🥺🥺💔</h1>
+    <img src="download1.png"><br><br>
+    <button onclick="goBack()">Back</button>
+  </div>
+
+  <script>
+    let noCount = 0;
+    let heartInterval = null;
+
+    /* PASSWORD */
+    function checkPass() {
+      if (pass.value === "322") {
+        lock.classList.add("hidden");
+        start.classList.remove("hidden");
+        startHearts();
+      } else {
+        error.innerText = "Wrong password 😅";
+      }
+    }
+
+    function stopMusic() {
+      yesMusic.pause(); yesMusic.currentTime = 0;
+      noMusic.pause();  noMusic.currentTime = 0;
+    }
+
+    function showLove() {
+      document.body.style.backgroundColor = "white";
+      document.body.style.color = "black";
+      start.classList.add("hidden");
+      love.classList.remove("hidden");
+    }
+
+    function yesClick() {
+      stopMusic();
+      yesMusic.play();
+      love.classList.add("hidden");
+      yes.classList.remove("hidden");
+    }
+
+    function noClick() {
+      stopMusic();
+      noMusic.play();
+      love.classList.add("hidden");
+      no.classList.remove("hidden");
+    }
+
+    /* RESET EVERYTHING */
+    function goBack() {
+      stopMusic();
+
+      // reset screens
+      yes.classList.add("hidden");
+      no.classList.add("hidden");
+      love.classList.add("hidden");
+      start.classList.remove("hidden");
+
+      // reset colors
+      document.body.style.backgroundColor = "#0f172a";
+      document.body.style.color = "white";
+
+      // reset NO button
+      noCount = 0;
+      const btn = document.getElementById("noBtn");
+      btn.innerText = "No";
+      btn.style.left = "";
+      btn.style.top = "";
+      btn.onclick = null;
+      btn.onmouseover = runAway;
+      btn.ontouchstart = runAway;
+
+      // reset hearts
+      stopHearts();
+      startHearts();
+    }
+
+    function runAway() {
+      const btn = document.getElementById("noBtn");
+
+      if (noCount >= 5) {
+        btn.innerText = "tired 😮‍💨";
+        btn.onclick = noClick;
+        btn.onmouseover = null;
+        btn.ontouchstart = null;
+        return;
+      }
+
+      noCount++;
+      btn.style.left = Math.random() * (window.innerWidth - 120) + "px";
+      btn.style.top  = Math.random() * (window.innerHeight - 60) + "px";
+    }
+
+    /* HEARTS */
+    function startHearts() {
+      heartInterval = setInterval(() => {
+        const heart = document.createElement("div");
+        heart.className = "heart";
+        heart.innerHTML = "❤️";
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.fontSize = Math.random() * 20 + 10 + "px";
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 6000);
+      }, 500);
+    }
+
+    function stopHearts() {
+      clearInterval(heartInterval);
+      document.querySelectorAll(".heart").forEach(h => h.remove());
+    }
+  </script>
+
+</body>
+</html>
