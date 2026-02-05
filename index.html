@@ -40,6 +40,19 @@
 
     #noBtn { position: absolute; }
 
+    /* SHAKE */
+    .shake {
+      animation: shake 0.3s;
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      50% { transform: translateX(6px); }
+      75% { transform: translateX(-6px); }
+      100% { transform: translateX(0); }
+    }
+
     /* FLOATING HEARTS */
     .heart {
       position: fixed;
@@ -60,8 +73,11 @@
 <body>
 
   <!-- AUDIO -->
-  <audio id="yesMusic"><source src="anime-wow-sound.mp3"></audio>
-  <audio id="noMusic"><source src="sad-meow-song.mp3"></audio>
+  <audio id="yesMusic" src="anime-wow-sound.mp3"></audio>
+  <audio id="noMusic" src="sad-meow-song.mp3"></audio>
+  <audio id="funnySound" src="fart.mp3"></audio>
+  <audio id="loginSound" src="noice-copy.mp3"></audio>
+  <audio id="errorSound" src="error.mp3"></audio>
 
   <!-- PASSWORD -->
   <div id="lock">
@@ -90,14 +106,14 @@
 
   <!-- YES -->
   <div id="yes" class="hidden">
-    <h1>Yayyyy   mmwwwwwwwwwwwwwaaaaaaaaaaaaaaaaaaaaaahhhhhhhh😘😘😘🥰</h1>
+    <h1>Yayyyy mmwwwwwwwwwwwwwaaaaaaaaaaaaaahhhhhhh 😘🥰</h1>
     <img src="download.jpeg"><br><br>
     <button onclick="goBack()">Back</button>
   </div>
 
   <!-- NO -->
   <div id="no" class="hidden">
-    <h1>Oh okay 🥺🥺🥺💔</h1>
+    <h1>Oh okay 🥺💔</h1>
     <img src="download1.png"><br><br>
     <button onclick="goBack()">Back</button>
   </div>
@@ -106,20 +122,27 @@
     let noCount = 0;
     let heartInterval = null;
 
+    function stopAllSounds() {
+      document.querySelectorAll("audio").forEach(a => {
+        a.pause();
+        a.currentTime = 0;
+      });
+    }
+
     /* PASSWORD */
     function checkPass() {
       if (pass.value === "322") {
+        stopAllSounds();
+        loginSound.play();
         lock.classList.add("hidden");
         start.classList.remove("hidden");
         startHearts();
       } else {
         error.innerText = "Wrong password 😅";
+        errorSound.play();
+        lock.classList.add("shake");
+        setTimeout(() => lock.classList.remove("shake"), 300);
       }
-    }
-
-    function stopMusic() {
-      yesMusic.pause(); yesMusic.currentTime = 0;
-      noMusic.pause();  noMusic.currentTime = 0;
     }
 
     function showLove() {
@@ -130,34 +153,30 @@
     }
 
     function yesClick() {
-      stopMusic();
+      stopAllSounds();
       yesMusic.play();
       love.classList.add("hidden");
       yes.classList.remove("hidden");
     }
 
     function noClick() {
-      stopMusic();
+      stopAllSounds();
       noMusic.play();
       love.classList.add("hidden");
       no.classList.remove("hidden");
     }
 
-    /* RESET EVERYTHING */
     function goBack() {
-      stopMusic();
+      stopAllSounds();
 
-      // reset screens
       yes.classList.add("hidden");
       no.classList.add("hidden");
       love.classList.add("hidden");
       start.classList.remove("hidden");
 
-      // reset colors
       document.body.style.backgroundColor = "#0f172a";
       document.body.style.color = "white";
 
-      // reset NO button
       noCount = 0;
       const btn = document.getElementById("noBtn");
       btn.innerText = "No";
@@ -167,7 +186,6 @@
       btn.onmouseover = runAway;
       btn.ontouchstart = runAway;
 
-      // reset hearts
       stopHearts();
       startHearts();
     }
@@ -176,6 +194,7 @@
       const btn = document.getElementById("noBtn");
 
       if (noCount >= 5) {
+        stopAllSounds();
         btn.innerText = "tired 😮‍💨";
         btn.onclick = noClick;
         btn.onmouseover = null;
@@ -184,6 +203,9 @@
       }
 
       noCount++;
+      funnySound.currentTime = 0;
+      funnySound.play();
+
       btn.style.left = Math.random() * (window.innerWidth - 120) + "px";
       btn.style.top  = Math.random() * (window.innerHeight - 60) + "px";
     }
